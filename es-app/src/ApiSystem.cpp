@@ -1050,7 +1050,7 @@ std::vector<BatoceraBezel> ApiSystem::getBatoceraBezelsList()
 
 	std::vector<BatoceraBezel> res;
 
-	auto lines = executeEnumerationScript("batocera-es-thebezelproject list");
+	auto lines = executeEnumerationScript("rocknix-es-thebezelproject list");
 	for (auto line : lines)
 	{
 		auto parts = Utils::String::splitAny(line, " \t");
@@ -1075,12 +1075,12 @@ std::vector<BatoceraBezel> ApiSystem::getBatoceraBezelsList()
 
 std::pair<std::string, int> ApiSystem::installBatoceraBezel(std::string bezelsystem, const std::function<void(const std::string)>& func)
 {
-	return executeScript("batocera-es-thebezelproject install " + bezelsystem, func);
+	return executeScript("rocknix-es-thebezelproject install " + bezelsystem, func);
 }
 
 std::pair<std::string, int> ApiSystem::uninstallBatoceraBezel(std::string bezelsystem, const std::function<void(const std::string)>& func)
 {
-	return executeScript("batocera-es-thebezelproject remove " + bezelsystem, func);
+	return executeScript("rocknix-es-thebezelproject remove " + bezelsystem, func);
 }
 
 std::string ApiSystem::getMD5(const std::string fileName, bool fromZipContents)
@@ -1664,7 +1664,7 @@ bool ApiSystem::isScriptingSupported(ScriptId script)
 		executables.push_back("batocera-store");
 		break;
 	case ApiSystem::THEBEZELPROJECT:
-		executables.push_back("batocera-es-thebezelproject");
+		executables.push_back("rocknix-es-thebezelproject");
 		break;		
 	case ApiSystem::PADSINFO:
 		executables.push_back("batocera-padsinfo");
