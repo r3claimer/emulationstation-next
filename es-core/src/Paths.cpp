@@ -71,12 +71,12 @@ Paths::Paths()
 	mLogPath = "/var/log";
 	mScreenShotsPath = "/storage/roms/screenshots";
 	mSaveStatesPath = "/storage/roms/savestates";
-	mMusicPath = mUserEmulationStationPath + "/BGM";
-	mUserMusicPath = "/storage/roms/_userdata/BGM";
+	mMusicPath = mUserEmulationStationPath + "/music";
+	mUserMusicPath = "/storage/roms/music";
 	mThemesPath = mUserEmulationStationPath + "/themes";
-	mUserThemesPath = "/storage/roms/_userdata/themes";
-	mDecorationsPath = mUserEmulationStationPath + "/bezels";
-	mUserDecorationsPath = "/storage/roms/_userdata/bezels";
+	mUserThemesPath = "/storage/roms/themes";
+	mDecorationsPath = "/storage/roms/bezels";
+	mUserDecorationsPath = "/tmp/overlays/bezels";
 	mTimeZonesPath = "/usr/share/zoneinfo";
 
 	mSystemConfFilePath = "/storage/.config/system/configs/system.cfg";
