@@ -2443,16 +2443,6 @@ void GuiMenu::openSystemSettings()
 	s->addEntry(_("SECURITY"), true, [this, s] 
 	{
 		GuiSettings *securityGui = new GuiSettings(mWindow, _("SECURITY").c_str());
-#if defined(ROCKNIX)
-		auto rootpassword = std::make_shared<TextComponent>(mWindow, SystemConf::getInstance()->get("root.password"), ThemeData::getMenuTheme()->Text.font, ThemeData::getMenuTheme()->Text.color);
-		securityGui->addInputTextRow(_("ROOT PASSWORD"), "root.password", false);
-
-		securityGui->addSaveFunc([this, rootpassword] {
-			SystemConf::getInstance()->saveSystemConf();
-			const std::string rootpass = SystemConf::getInstance()->get("root.password");
-			Utils::Platform::runSystemCommand("setrootpass " + rootpass, "", nullptr);
-		});
-#else
 		auto securityEnabled = std::make_shared<SwitchComponent>(mWindow);
 		securityEnabled->setState(SystemConf::getInstance()->get("system.security.enabled") == "1");
 		securityGui->addWithDescription(_("ENFORCE SECURITY"), _("Require a password for accessing the network share."), securityEnabled);
@@ -2471,7 +2461,6 @@ void GuiMenu::openSystemSettings()
 				s->setVariable("reboot", true);				
 			}
 		});
-#endif
 		mWindow->pushGui(securityGui);
 	});
 #else
@@ -2487,6 +2476,21 @@ void GuiMenu::openSystemSettings()
 	// Developer options
 	if (isFullUI) {
 		s->addEntry(_("FRONTEND DEVELOPER OPTIONS"), true, [this] { openDeveloperSettings(); });
+
+		// Security
+		s->addEntry(_("SECURITY"), true, [this, s]
+		{
+			GuiSettings *securityGui = new GuiSettings(mWindow, _("SECURITY").c_str());
+			auto rootpassword = std::make_shared<TextComponent>(mWindow, SystemConf::getInstance()->get("root.password"), ThemeData::getMenuTheme()->Text.font, ThemeData::getMenuTheme()->Text.color);
+			securityGui->addInputTextRow(_("ROOT PASSWORD"), "root.password", false);
+
+			securityGui->addSaveFunc([this, rootpassword] {
+				SystemConf::getInstance()->saveSystemConf();
+				const std::string rootpass = SystemConf::getInstance()->get("root.password");
+				Utils::Platform::runSystemCommand("setrootpass " + rootpass, "", nullptr);
+			});
+			mWindow->pushGui(securityGui);
+		});
 		s->addEntry(_("SYSTEM MANAGEMENT AND RESET"), true, [this] { openResetOptions(); });
 	}
 
