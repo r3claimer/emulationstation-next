@@ -3311,10 +3311,10 @@ void GuiMenu::openGamesSettings()
 		s->addSaveFunc([integerscale_enabled] { SystemConf::getInstance()->set("global.integerscale", integerscale_enabled->getSelected()); });
 	}
 
-#if !defined(ROCKNIX)
 	// Shaders preset
 	if (ApiSystem::getInstance()->isScriptingSupported(ApiSystem::SHADERS) && !hasGlobalFeature("shaderset"))
 	{
+#if !defined(ROCKNIX)
 		auto installedShaders = ApiSystem::getInstance()->getShaderList("", "", "");
 		if (installedShaders.size() > 0)
 		{
@@ -3341,14 +3341,19 @@ void GuiMenu::openGamesSettings()
 			s->addSaveFunc([shaders_choices] { SystemConf::getInstance()->set("global.shaderset", shaders_choices->getSelected()); });
 #if !defined(ROCKNIX)
 		}
+#endif
 	}
 
 	// Video Filters
+#if !defined(ROCKNIX)
 	if (ApiSystem::getInstance()->isScriptingSupported(ApiSystem::VIDEOFILTERS) && !hasGlobalFeature("videofilters"))
 	{
 		auto installedVideofilters = ApiSystem::getInstance()->getVideoFilterList("", "", "");
 		if (installedVideofilters.size() > 0)
 		{
+#else
+	if (ApiSystem::getInstance()->isScriptingSupported(ApiSystem::SHADERS) && !hasGlobalFeature("shaderset"))
+	{
 #endif
 			std::string currentVideofilter = SystemConf::getInstance()->get("global.videofilters");
 
@@ -3372,8 +3377,8 @@ void GuiMenu::openGamesSettings()
 			s->addSaveFunc([videofilters_choices] { SystemConf::getInstance()->set("global.videofilters", videofilters_choices->getSelected()); });
 #if !defined(ROCKNIX)
 		}
-	}
 #endif
+	}
 
 	// decorations
 	if (ApiSystem::getInstance()->isScriptingSupported(ApiSystem::DECORATIONS) && !hasGlobalFeature("bezel"))
@@ -5259,11 +5264,11 @@ void GuiMenu::popSpecificConfigurationGui(Window* mWindow, std::string title, st
 		systemConfiguration->addSaveFunc([configName, autosave_enabled] { SystemConf::getInstance()->set(configName + ".autosave", autosave_enabled->getSelected()); });
 	}
 	
-#if !defined(ROCKNIX)
 	// Shaders preset
 	if (ApiSystem::getInstance()->isScriptingSupported(ApiSystem::SHADERS) &&
 		systemData->isFeatureSupported(currentEmulator, currentCore, EmulatorFeatures::shaders))
 	{
+#if !defined(ROCKNIX)
 		auto installedShaders = ApiSystem::getInstance()->getShaderList(systemData->getName(), currentEmulator, currentCore);
 		if (installedShaders.size() > 0)
 		{
@@ -5290,15 +5295,21 @@ void GuiMenu::popSpecificConfigurationGui(Window* mWindow, std::string title, st
 			systemConfiguration->addSaveFunc([configName, shaders_choices] { SystemConf::getInstance()->set(configName + ".shaderset", shaders_choices->getSelected()); });
 #if !defined(ROCKNIX)
 		}
+#endif
 	}
 
 	// Video Filters preset
+#if !defined(ROCKNIX)
 	if (ApiSystem::getInstance()->isScriptingSupported(ApiSystem::VIDEOFILTERS) &&
 		systemData->isFeatureSupported(currentEmulator, currentCore, EmulatorFeatures::videofilters))
 	{
 		auto installedVideofilters = ApiSystem::getInstance()->getVideoFilterList(systemData->getName(), currentEmulator, currentCore);
 		if (installedVideofilters.size() > 0)
 		{
+#else
+	if (ApiSystem::getInstance()->isScriptingSupported(ApiSystem::SHADERS) &&
+		systemData->isFeatureSupported(currentEmulator, currentCore, EmulatorFeatures::shaders))
+	{
 #endif
 			std::string currentVideofilter = SystemConf::getInstance()->get(configName + ".videofilter");
 
@@ -5322,8 +5333,8 @@ void GuiMenu::popSpecificConfigurationGui(Window* mWindow, std::string title, st
 			systemConfiguration->addSaveFunc([configName, videofilters_choices] { SystemConf::getInstance()->set(configName + ".videofilter", videofilters_choices->getSelected()); });
 #if !defined(ROCKNIX)
 		}
-	}
 #endif
+	}
 
 	// Integer scale
 	if (systemData->isFeatureSupported(currentEmulator, currentCore, EmulatorFeatures::pixel_perfect))
