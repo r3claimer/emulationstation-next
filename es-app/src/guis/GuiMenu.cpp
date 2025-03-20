@@ -1587,7 +1587,7 @@ void GuiMenu::openSystemSettings()
 	    if(n > 1) {
 	      lnstr = " " + std::to_string(n);
 	    }
-	    s->addWithLabel(_("BRIGHTNESS") + lnstr, brightnessComponent);
+	    s->addWithLabel(_("SCREEN BRIGHTNESS") + lnstr, brightnessComponent);
 	  }
 	}
 
@@ -1950,23 +1950,6 @@ void GuiMenu::openSystemSettings()
 			SystemConf::getInstance()->set("system.suspendmode", optionsSleep->getSelected());
 			Utils::Platform::runSystemCommand("/usr/bin/suspendmode " + optionsSleep->getSelected(), "", nullptr);
 		}
-	});
-#endif
-
-#ifdef RK3399
-	// Add option to disable RG552 wifi gpio
-	auto internal_wifi = std::make_shared<SwitchComponent>(mWindow);
-	bool internalmoduleEnabled = SystemConf::getInstance()->get("internal.wifi") == "1";
-	internal_wifi->setState(internalmoduleEnabled);
-	s->addWithLabel(_("ENABLE INTERNAL WIFI"), internal_wifi);
-	internal_wifi->setOnChangedCallback([internal_wifi] {
-		if (internal_wifi->getState() == false) {
-			Utils::Platform::runSystemCommand("/usr/bin/internalwifi disable", "", nullptr);
-		} else {
-			Utils::Platform::runSystemCommand("/usr/bin/internalwifi enable", "", nullptr);
-		}
-		bool internalwifi = internal_wifi->getState();
-		SystemConf::getInstance()->set("internal.wifi", internalwifi ? "1" : "0");
 	});
 #endif
 
@@ -4870,6 +4853,23 @@ void GuiMenu::openNetworkSettings(bool selectWifiEnable)
 	auto enable_wifi = std::make_shared<SwitchComponent>(mWindow);
 	enable_wifi->setState(baseWifiEnabled);
 	s->addWithLabel(_("ENABLE WIFI"), enable_wifi, selectWifiEnable);
+
+#ifdef RK3399
+        // Add option to disable RG552 wifi gpio
+        auto internal_wifi = std::make_shared<SwitchComponent>(mWindow);
+        bool internalmoduleEnabled = SystemConf::getInstance()->get("internal.wifi") == "1";
+        internal_wifi->setState(internalmoduleEnabled);
+        s->addWithLabel(_("ENABLE WIFI GPIO"), internal_wifi);
+        internal_wifi->setOnChangedCallback([internal_wifi] {
+                if (internal_wifi->getState() == false) {
+                        Utils::Platform::runSystemCommand("/usr/bin/internalwifi disable", "", nullptr);
+                } else {
+                        Utils::Platform::runSystemCommand("/usr/bin/internalwifi enable", "", nullptr);
+                }
+                bool internalwifi = internal_wifi->getState();
+                SystemConf::getInstance()->set("internal.wifi", internalwifi ? "1" : "0");
+        });
+#endif
 
 	// window, title, settingstring,
 	const std::string baseSSID = SystemConf::getInstance()->get("wifi.ssid");
