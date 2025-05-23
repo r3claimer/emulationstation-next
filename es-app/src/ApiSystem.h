@@ -240,6 +240,9 @@ public:
     /* OS Info */
     std::vector<std::string> getAvailableGovernors();
 
+    /* Display Info */
+    std::vector<std::string> getAvailableDisplayModes();
+
     /* LED Colors */
     std::vector<std::string> getAvailableColors();
 
