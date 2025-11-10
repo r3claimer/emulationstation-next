@@ -25,6 +25,7 @@
 #include "SaveStateRepository.h"
 #include "Paths.h"
 #include "SystemRandomPlaylist.h"
+#include "ThemeData.h"
 
 #if WIN32
 #include "Win32ApiSystem.h"
@@ -80,8 +81,8 @@ SystemData::SystemData(const SystemMetadata& meta, SystemEnvironmentData* envDat
 	if (pEmulators != nullptr)
 		mEmulators = *pEmulators;
 
-	auto hiddenSystems = Utils::String::split(Settings::HiddenSystems(), ';');
-	mHidden = (mIsCollectionSystem ? withTheme : (std::find(hiddenSystems.cbegin(), hiddenSystems.cend(), getName()) != hiddenSystems.cend()));
+	auto hiddenSystems = Settings::getInstance()->getHiddenSystems();
+	mHidden = (mIsCollectionSystem ? withTheme : (hiddenSystems.find(getName()) != hiddenSystems.cend()));
 
 	loadFeatures();
 
@@ -394,7 +395,7 @@ void SystemData::indexAllGameFilters(const FolderData* folder)
 
 void SystemData::createGroupedSystems()
 {
-	auto hiddenSystems = Utils::String::split(Settings::HiddenSystems(), ';');
+	auto hiddenSystems = Settings::getInstance()->getHiddenSystems();
 
 	std::map<std::string, std::vector<SystemData*>> map;
 
@@ -411,7 +412,7 @@ void SystemData::createGroupedSystems()
 			sys->getSystemEnvData()->mGroup = "";
 			continue;
 		}		
-		else if (std::find(hiddenSystems.cbegin(), hiddenSystems.cend(), sys->getName()) != hiddenSystems.cend())
+		else if (hiddenSystems.find(sys->getName()) != hiddenSystems.cend())
 			continue;
 		
 		map[sys->getSystemEnvData()->mGroup].push_back(sys);		
@@ -480,7 +481,7 @@ void SystemData::createGroupedSystems()
 			system->mIsGameSystem = false;
 		}
 
-		if (std::find(hiddenSystems.cbegin(), hiddenSystems.cend(), system->getName()) != hiddenSystems.cend())
+		if (hiddenSystems.find(system->getName()) != hiddenSystems.cend())
 		{
 			system->mHidden = true;
 
@@ -973,6 +974,8 @@ bool SystemData::loadConfig(Window* window)
 		if (checkIndex != 0)
 			ThreadedHasher::start(window, (ThreadedHasher::HasherType)checkIndex, false, true);
 	}
+
+	ThemeFileCache::getInstance().clear();
 
 	return true;
 }
@@ -1536,7 +1539,7 @@ void SystemData::loadTheme()
 		sysData["system.netplay"] = SystemConf::getInstance()->getBool("global.netplay") && isNetplaySupported() ? "true" : "false";
 		sysData["system.savestates"] = isCurrentFeatureSupported(EmulatorFeatures::autosave) ? "true" : "false";
 
-		if (Settings::getInstance()->getString("SortSystems") == "hardware")
+		if (Settings::getInstance()->getString("SortSystems") == "hardware" || Settings::getInstance()->getString("SortSystems") == "hardware-year")
 			sysData["system.sortedBy"] = Utils::String::proper(getSystemMetadata().hardwareType);
 		else
 			sysData["system.sortedBy"] = getSystemMetadata().manufacturer;
@@ -1755,7 +1758,7 @@ bool SystemData::isGroupChildSystem()
 
 std::unordered_set<std::string> SystemData::getAllGroupNames()
 {
-	auto hiddenSystems = Utils::String::split(Settings::HiddenSystems(), ';');
+	auto hiddenSystems = Settings::getInstance()->getHiddenSystems();
 
 	std::unordered_set<std::string> names;
 	
@@ -1767,7 +1770,7 @@ std::unordered_set<std::string> SystemData::getAllGroupNames()
 		else if (sys->mEnvData != nullptr && !sys->mEnvData->mGroup.empty())
 			name = sys->mEnvData->mGroup;
 
-		if (!name.empty() && std::find(hiddenSystems.cbegin(), hiddenSystems.cend(), name) == hiddenSystems.cend())
+		if (!name.empty() && hiddenSystems.find(name) == hiddenSystems.cend())
 			names.insert(name);
 	}
 

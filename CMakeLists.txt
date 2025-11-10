@@ -22,6 +22,10 @@ add_definitions(-w)
 # Win32 default platform & directory detection
 if(WIN32)
 
+	set(CMAKE_CXX_STANDARD 17)
+	set(CMAKE_CXX_STANDARD_REQUIRED ON)
+	set(CMAKE_CXX_EXTENSIONS OFF) # désactive les extensions (MSVC++)
+
 	if (NOT CMAKE_GENERATOR_PLATFORM)
 		set(CMAKE_GENERATOR_PLATFORM Win32)	    
 	endif()
@@ -281,10 +285,10 @@ if(CMAKE_COMPILER_IS_GNUCXX)
 
     #set up compiler flags for GCC
 if (CMAKE_BUILD_TYPE MATCHES Debug)
-    set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -std=c++14 -Wno-attributes -O0") #support C++14 for std::, optimize
+    set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -std=c++17 -Wno-attributes -O0") #support C++17 for std::, optimize
     set(CMAKE_EXE_LINKER_FLAGS "${CMAKE_EXE_LINKER_FLAGS} -O0")
 else()
-    set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -std=c++14 -Wno-attributes -O3") #support C++14 for std::, optimize
+    set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -std=c++17 -Wno-attributes -O3") #support C++17 for std::, optimize
     set(CMAKE_EXE_LINKER_FLAGS "${CMAKE_EXE_LINKER_FLAGS} -O3")  #-s = strip binary
 endif()
 endif()
@@ -489,6 +493,12 @@ if(NOT WIN32)
 	else()
 	  message (STATUS "Native language support disabled.")
 	endif()
+endif()
+
+find_program (PYTHON3_EXECUTABLE python3)
+if(PYTHON3_EXECUTABLE AND NOT MSVC)
+  add_custom_target (checkgamesdb ALL COMMENT "Checking guns and wheels games db.")
+  add_custom_command (TARGET checkgamesdb COMMAND "${PYTHON3_EXECUTABLE}" "${CMAKE_CURRENT_SOURCE_DIR}/resources/checkWheelGunGamesResources.py")
 endif()
 
 #-------------------------------------------------------------------------------
