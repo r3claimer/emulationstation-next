@@ -2017,6 +2017,17 @@ void GuiMenu::openSystemSettings()
 	{
 	    SystemConf::getInstance()->set("system.shutdown_delay_running_game", std::to_string((int)(round(ctlShutdownInGameDelay->getValue()) * 60)));
 	});
+
+	// Add option to park cores on suspend
+	auto park_cores_toggle = std::make_shared<SwitchComponent>(mWindow);
+	bool internalmoduleEnabled = SystemConf::getInstance()->get("system.suspend.park_cores") == "1";
+	park_cores_toggle->setState(internalmoduleEnabled);
+	s->addWithLabel(_("ENABLE CORE PARKING"), park_cores_toggle);
+	park_cores_toggle->setOnChangedCallback([park_cores_toggle] {
+		bool park_cores_state = park_cores_toggle->getState();
+		SystemConf::getInstance()->set("system.suspend.park_cores", park_cores_state ? "1" : "0");
+	});
+	
 #endif
 
 #ifdef BATOCERA
